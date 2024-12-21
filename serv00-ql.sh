@@ -35,7 +35,7 @@ for SERVER in "${SERVER_LIST[@]}"; do
     # 分解每个服务器的用户名、密码、地址
     IFS=':' read -r SSH_USER SSH_PASS SSH_HOST <<< "$SERVER"
 
-    # 组合 SSH 用户和主机名，例如：zjccc1411-cache14.serv00.com
+    # 组合 SSH 用户和主机名，例如：xxxxx-cache14.serv00.com
     SERVER_ID="${SSH_USER}-${SSH_HOST}"
 
     # 输出开始执行的消息
