@@ -20,7 +20,8 @@
 | `WEB_SSH`       | 是否启用 webssh 服务                     | 2      | `1`（启用）或 `2`（不启用） |
 | `services_started` | 记录当前启用的服务，用于显示和发送通知 | 无     | 自动填充              |
 
-
+示例：
+![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMSZ2bRUg3zy1IQvmG98Z4EZls4VjIAAkPCMRv26zhXWE9Dy0_GKO4BAAMCAAN5AAM2BA)
 
 - **serv00vps 是vps保活脚本**
 ## JSON配置
@@ -64,9 +65,10 @@
 ```
 **1开 2关**
 **必须将变量修改为你自己的信息,自行修改脚本内容。**
+示例:
+![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMTZ2bRaRyygvCxNaGSypYKd83Qp3gAAkXCMRv26zhXAjgdTBPw_yIBAAMCAAN4AAM2BA)
 
-
-# 后续可自行添加 
+### 后续可自行添加 
 - 1 切换到 nezha_dashboard 目录并启动 哪吒V1_dashboard 进程
 
 ```
