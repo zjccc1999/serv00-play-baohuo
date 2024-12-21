@@ -76,7 +76,8 @@
 
 
 VPS示例:
-![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMTZ2bRaRyygvCxNaGSypYKd83Qp3gAAkXCMRv26zhXAjgdTBPw_yIBAAMCAAN4AAM2BA)
+
+![vps.png](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMUZ2bTXlVnF71cIaegnjd7pW_ofZ0AAkjCMRv26zhX3prNP-eOWCYBAAMCAAN4AAM2BA)
 
 
 ### 后续可自行添加 
