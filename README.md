@@ -18,22 +18,49 @@
 
 - serv00vps 是vps保活脚本
 
-注意:务必将`servers.conf` 文件存入私库或其他支持直链的云盘，避免信息泄露。git私库文件可用CM的私库项目获取可访问的直链
+注意:务必将`serv00.json` 文件存入私库或其他支持直链的云盘，避免信息泄露。git私库文件可用CM的私库项目获取可访问的直链
 ```
-# Telegram 配置
-BOT_TOKEN=your_telegram_bot_token
-CHAT_ID=your_chat_id
-
-# 服务器配置
-user1:pass1:host1
-user2:pass2:host2
-user3:pass3:host3
+{
+  "TELEGRAM_CONFIG": {
+    "BOT_TOKEN": "",
+    "CHAT_ID": ""
+  },
+  "SERVERS": [
+    {
+      "HOST": "cache14.serv00.com",
+      "SSH_USER": "用户名",
+      "SSH_PASS": "密码"
+    },
+    {
+      "HOST": "cache14.serv00.com",
+      "SSH_USER": "",
+      "SSH_PASS": ""
+    },
+    {
+      "HOST": "cache14.serv00.com",
+      "SSH_USER": "",
+      "SSH_PASS": ""
+    },
+    {
+      "HOST": "cache14.serv00.com",
+      "SSH_USER": "",
+      "SSH_PASS": ""
+    }
+  ],
+  "FEATURES": {
+    "SINGBOX": 1,
+    "NEZHA_DASHBOARD": 2,
+    "NEZHA_AGENT": 2,
+    "SUN_PANEL": 2,
+    "WEB_SSH": 2
+  }
+}
 ```
+**1开 2关**
+**必须将变量修改为你自己的信息,自行修改脚本内容。**
 
-必须将变量修改为你自己的信息,自行修改脚本内容。
 
-
-# 可自行添加 
+# 后续可自行添加 
 - 1 切换到 nezha_dashboard 目录并启动 哪吒V1_dashboard 进程
 
 ```
@@ -55,4 +82,4 @@ nohup ./sun-panel > sunpanel.log 2>&1 &
 cd /home/用户名/serv00-play/webssh || exit
 nohup ./wssh > webssh.log 2>&1 &
 ```
-  
+等等。。。  
