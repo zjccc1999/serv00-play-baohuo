@@ -1,8 +1,8 @@
 # serv00-play 配套保活
 
-感谢[饭奇骏大佬的serv00-play项目](https://github.com/frankiejun)[serv00-play项目地址](https://github.com/frankiejun/serv00-play)
+感谢[饭奇骏大佬的serv00-play项目](https://github.com/frankiejun).  [serv00-play项目地址](https://github.com/frankiejun/serv00-play).
 
-感谢[vfhky大佬的nz项目](https://github.com/vfhky) [serv00_ct8_nezha项目地址](https://github.com/vfhky/serv00_ct8_nezha)
+感谢[vfhky大佬的nz项目](https://github.com/vfhky).    [serv00_ct8_nezha项目地址](https://github.com/vfhky/serv00_ct8_nezha).
 - **serv00ql 是青龙面板保活脚本**
 ## 环境变量配置
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
