@@ -8,7 +8,7 @@
 - **serv00ql 是青龙面板保活脚本**
 安装依赖:
 
-![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMRZ2bQVnmN3Z_WgLItlwdkKobOfjAAAkHCMRv26zhXVr8iewLtpP4BAAMCAAN4AAM2BA)
+![依赖.png](https://jpg.zjccc.us.kg/file/1734808200086_依赖.png)
 
 ## ql面板环境变量配置
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
@@ -28,7 +28,7 @@
 命令
 `task serv00-ql.sh`
 青龙面板示例：
-![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMSZ2bRUg3zy1IQvmG98Z4EZls4VjIAAkPCMRv26zhXWE9Dy0_GKO4BAAMCAAN5AAM2BA)
+![青龙.png](https://jpg.zjccc.us.kg/file/1734808193305_青龙.png)
 
 # vps教程
 - **serv00vps 是vps保活脚本**
@@ -80,7 +80,7 @@
 
 VPS示例:
 
-![vps.png](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMUZ2bTXlVnF71cIaegnjd7pW_ofZ0AAkjCMRv26zhX3prNP-eOWCYBAAMCAAN4AAM2BA)
+![vps.png](https://jpg.zjccc.us.kg/file/1734808193445_vps.png)
 
 
 ### 后续可自行添加 
