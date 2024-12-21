@@ -24,7 +24,9 @@
 | `WEB_SSH`       | 是否启用 webssh 服务                     | 2      | `1`（启用）或 `2`（不启用） |
 
 推荐8小时运行一次
-
+`0 */8 * * *`
+命令
+`task serv00-ql.sh`
 青龙面板示例：
 ![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMSZ2bRUg3zy1IQvmG98Z4EZls4VjIAAkPCMRv26zhXWE9Dy0_GKO4BAAMCAAN5AAM2BA)
 
