@@ -3,10 +3,11 @@
 # 环境变量配置
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
 
-变量名	变量值
-SERVERS	user1:pass1:host1,user2:pass2:host2,user3:pass3:host3
-BOT_TOKEN	你的 Telegram Bot Token
-CHAT_ID	你的 Telegram Chat ID
+|  变量名    | 变量值                                                    |
+|  ----      | ----                                                      |
+| SERVERS    | user1:pass1:host1,user2:pass2:host2,user3:pass3:host3     |
+| BOT_TOKEN  | 你的 Telegram Bot Token                                   |
+| CHAT_ID    |你的 Telegram Chat ID                                      |
 
 - serv00vps 是vps保活脚本
 
