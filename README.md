@@ -4,7 +4,9 @@
 
 感谢[vfhky大佬的nz项目](https://github.com/vfhky).    [serv00_ct8_nezha项目地址](https://github.com/vfhky/serv00_ct8_nezha).
 - **serv00ql 是青龙面板保活脚本**
-## 环境变量配置
+
+![添加依赖](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMRZ2bQVnmN3Z_WgLItlwdkKobOfjAAAkHCMRv26zhXVr8iewLtpP4BAAMCAAN4AAM2BA)
+## ql面板环境变量配置
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
 | 环境变量        | 说明                                      | 默认值 | 示例值                |
 |-----------------|-----------------------------------------|--------|-----------------------|
@@ -21,7 +23,7 @@
 
 
 - **serv00vps 是vps保活脚本**
-
+## JSON配置
 注意:务必将`serv00.json` 文件存入私库或其他支持直链的云盘，避免信息泄露。git私库文件可用CM的私库项目获取可访问的直链
 ```
 {
