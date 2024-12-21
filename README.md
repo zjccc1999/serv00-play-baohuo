@@ -84,25 +84,5 @@ VPS示例:
 
 
 ### 后续可自行添加 
-- 1 切换到 nezha_dashboard 目录并启动 哪吒V1_dashboard 进程
 
-```
-cd /home/$SSH_USER/nezha_app/agent || exit
-nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
-```
-- 2 切换到 nezha_agent 目录并启动 哪吒V1_agent 进程
-```
-cd /home/用户名/nezha_app/agent || exit
-nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
-```
--3 切换到另一个目录并启动 sun-panel 进程
-```
-cd /home/用户名/serv00-play/sunpanel || exit
-nohup ./sun-panel > sunpanel.log 2>&1 &
-```
-- 4 切换到另一个目录并启动 webssh 进程
-```
-cd /home/用户名/serv00-play/webssh || exit
-nohup ./wssh > webssh.log 2>&1 &
-```
 等等。。。  
