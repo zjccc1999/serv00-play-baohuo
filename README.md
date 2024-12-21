@@ -64,7 +64,11 @@
 }
 ```
 **1开 2关**
-**必须将变量修改为你自己的信息,自行修改脚本内容。**
+# 注意
+**必须将变量修改为你自己的信息,自行修改脚本内容。在52行** 
+**必须将变量修改为你自己的信息,自行修改脚本内容。在52行**
+**必须将变量修改为你自己的信息,自行修改脚本内容。在52行**
+
 示例:
 ![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMTZ2bRaRyygvCxNaGSypYKd83Qp3gAAkXCMRv26zhXAjgdTBPw_yIBAAMCAAN4AAM2BA)
 
