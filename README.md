@@ -5,7 +5,11 @@
 感谢[vfhky大佬的nz项目](https://github.com/vfhky).    [serv00_ct8_nezha项目地址](https://github.com/vfhky/serv00_ct8_nezha).
 - **serv00ql 是青龙面板保活脚本**
 
+
+安装依赖:
+
 ![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMRZ2bQVnmN3Z_WgLItlwdkKobOfjAAAkHCMRv26zhXVr8iewLtpP4BAAMCAAN4AAM2BA)
+
 ## ql面板环境变量配置
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
 | 环境变量        | 说明                                      | 默认值 | 示例值                |
@@ -20,7 +24,8 @@
 | `WEB_SSH`       | 是否启用 webssh 服务                     | 2      | `1`（启用）或 `2`（不启用） |
 | `services_started` | 记录当前启用的服务，用于显示和发送通知 | 无     | 自动填充              |
 
-示例：
+
+青龙面板示例：
 ![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMSZ2bRUg3zy1IQvmG98Z4EZls4VjIAAkPCMRv26zhXWE9Dy0_GKO4BAAMCAAN5AAM2BA)
 
 - **serv00vps 是vps保活脚本**
@@ -69,8 +74,10 @@
 **必须将变量修改为你自己的信息,自行修改脚本内容。在52行**
 **必须将变量修改为你自己的信息,自行修改脚本内容。在52行**
 
-示例:
+
+VPS示例:
 ![undefined](https://jpg.jzccc.us.kg/api/cfile/AgACAgUAAxkDAAMTZ2bRaRyygvCxNaGSypYKd83Qp3gAAkXCMRv26zhXAjgdTBPw_yIBAAMCAAN4AAM2BA)
+
 
 ### 后续可自行添加 
 - 1 切换到 nezha_dashboard 目录并启动 哪吒V1_dashboard 进程
