@@ -26,7 +26,7 @@ user3:pass3:host3
 必须将变量修改为你自己的信息,自行修改脚本内容。
 
 
-#可自行添加 
+# 可自行添加 
 - 1 切换到 nezha_dashboard 目录并启动 哪吒V1_dashboard 进程
 
 ```
@@ -43,7 +43,7 @@ nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
 cd /home/用户名/serv00-play/sunpanel || exit
 nohup ./sun-panel > sunpanel.log 2>&1 &
 ```
-- 4
+- 4 切换到另一个目录并启动 webssh 进程
 ```
 cd /home/用户名/serv00-play/webssh || exit
 nohup ./wssh > webssh.log 2>&1 &
