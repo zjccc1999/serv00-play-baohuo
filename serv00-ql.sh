@@ -23,9 +23,9 @@ send_tg_notification() {
 
     # 判断返回的状态码是否为 200，表示成功
     if [ "$response" -eq 200 ]; then
-        echo -e "${GREEN}Telegram 消息发送成功！${NC}"
+        echo -e "Telegram 消息发送成功！"
     else
-        echo -e "${RED}Telegram 消息发送失败，错误代码: $response${NC}"
+        echo -e "Telegram 消息发送失败，错误代码: $response"
     fi
 }
 
@@ -35,7 +35,7 @@ for SERVER in "${SERVER_LIST[@]}"; do
     # 分解每个服务器的用户名、密码、地址
     IFS=':' read -r SSH_USER SSH_PASS SSH_HOST <<< "$SERVER"
 
-    # 组合 SSH 用户和主机名，例如：xxxxx-cache14.serv00.com
+    # 组合 SSH 用户和主机名，例如：xxxxxx-cache14.serv00.com
     SERVER_ID="${SSH_USER}-${SSH_HOST}"
 
     # 输出开始执行的消息
@@ -49,38 +49,38 @@ for SERVER in "${SERVER_LIST[@]}"; do
 
     # 如果启用了 SINGBOX 服务
     if [ "$SINGBOX" -eq 1 ]; then
-        ssh_cmd+="cd /home/$SSH_USER/serv00-play/singbox || exit; nohup ./start.sh > serv00-play.log 2>&1 & "
+        ssh_cmd+="cd /home/$SSH_USER/serv00-play/singbox || true; nohup ./start.sh > serv00-play_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
         services_started+="singbox, "
     fi
 
     # 如果启用了 NEZHA_DASHBOARD 服务
     if [ "$NEZHA_DASHBOARD" -eq 1 ]; then
-        ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || exit; nohup ./nezha-dashboard > nezha-dashboard.log 2>&1 & "
+        ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || true; pkill -f 'nezha-dashboard' || true; nohup ./nezha-dashboard > nezha-dashboard_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
         services_started+="nezha-dashboard, "
     fi
 
     # 如果启用了 NEZHA_AGENT 服务
     if [ "$NEZHA_AGENT" -eq 1 ]; then
-        ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || exit; nohup sh nezha-agent.sh > nezha-agent.log 2>&1 & "
+        ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pgrep -f '/nezha-agent -c /home/$SSH_USER/nezha_app/agent/config.yml' | xargs -r kill -9; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
         services_started+="nezha-agent, "
     fi
 
     # 如果启用了 SUN_PANEL 服务
     if [ "$SUN_PANEL" -eq 1 ]; then
-        ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || exit; nohup ./sun-panel > sunpanel.log 2>&1 & "
+        ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
         services_started+="sun-panel, "
     fi
 
     # 如果启用了 WEB_SSH 服务
     if [ "$WEB_SSH" -eq 1 ]; then
-        ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || exit; nohup ./wssh > webssh.log 2>&1 & "
+        ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh > webssh_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
         services_started+="webssh, "
     fi
 
     # 去掉最后一个逗号和空格
     services_started=$(echo $services_started | sed 's/, $//')
 
-    # 执行 SSH 操作，连接服务器并运行相应的命令，屏蔽所有输出
+    # 执行 SSH 操作，连接服务器并运行相应的命令
     sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
 $ssh_cmd
 ps -A > /dev/null 2>&1  # 不显示 ps 输出
