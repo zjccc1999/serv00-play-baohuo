@@ -15,8 +15,8 @@
 | 环境变量        | 说明                                      | 默认值 | 示例值                |
 |-----------------|-----------------------------------------|--------|-----------------------|
 | `SERVERS`       | 服务器信息列表，格式为 `user:pass:host`，多个服务器使用逗号分隔 | 无     | `user1:password1:host1, user2:password2:host2` |
-| `BOT_TOKEN`     | Telegram Bot Token，用于发送消息通知     | 无     | `123456789:ABCDEFghijklmnopqrstuvwxyz` |
-| `CHAT_ID`       | 接收 Telegram 消息的聊天 ID             | 无     | `123456789`           |
+| `BOT_TOKEN`     | Telegram Bot Token，用于发送消息通知     | 不填不通知     | `123456789:ABCDEFghijklmnopqrstuvwxyz` |
+| `CHAT_ID`       | 接收 Telegram 消息的聊天 ID             | 不填不通知    | `123456789`           |
 | `SINGBOX`       | 是否启用 singbox 服务                    | 1      | `1`（启用）或 `2`（不启用） |
 | `NEZHA_DASHBOARD` | 是否启用 nezha-dashboard 服务            | 2      | `1`（启用）或 `2`（不启用） |
 | `NEZHA_AGENT`   | 是否启用 nezha-agent 服务               | 2      | `1`（启用）或 `2`（不启用） |
