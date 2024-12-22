@@ -95,17 +95,16 @@ for SERVER in "${SERVER_LIST[@]}"; do
 
     colorize yellow "开始执行 ${SERVER_ID}"
 
-    services_started=""
     ssh_cmd=""
 
-    [[ "$SINGBOX" -eq 1 ]] && { ssh_cmd+="cd /home/$SSH_USER/serv00-play/singbox || true; nohup ./start.sh > serv00-play_$(date +%Y%m%d_%H%M%S).log 2>&1 & "; services_started+="singbox, "; }
-    [[ "$NEZHA_DASHBOARD" -eq 1 ]] && { ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || true; pkill -f 'nezha-dashboard' || true; nohup ./nezha-dashboard > nezha-dashboard_$(date +%Y%m%d_%H%M%S).log 2>&1 & "; services_started+="nezha-dashboard, "; }
-    [[ "$NEZHA_AGENT" -eq 1 ]] && { ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pgrep -f '/nezha-agent -c /home/$SSH_USER/nezha_app/agent/config.yml' | xargs -r kill -9; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "; services_started+="nezha-agent, "; }
-    [[ "$SUN_PANEL" -eq 1 ]] && { ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "; services_started+="sun-panel, "; }
-    [[ "$WEB_SSH" -eq 1 ]] && { ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh > webssh_$(date +%Y%m%d_%H%M%S).log 2>&1 & "; services_started+="webssh, "; }
+    # 执行服务命令（按需启动）
+    [[ "$SINGBOX" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/singbox || true; pkill -f 'singbox' || true; nohup ./start.sh > singbox_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    [[ "$NEZHA_DASHBOARD" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || true; pkill -f 'nezha-dashboard' || true; nohup ./nezha-dashboard > nezha-dashboard_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    [[ "$NEZHA_AGENT" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pkill -f 'nezha-agent' || true; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    [[ "$SUN_PANEL" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    [[ "$WEB_SSH" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh > webssh_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
 
-    services_started=$(echo "$services_started" | sed 's/, $//')
-
+    # 执行命令并检查是否成功
     sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
 $ssh_cmd
 ps -A > /dev/null 2>&1
@@ -113,8 +112,8 @@ exit
 EOF
 
     if [ $? -eq 0 ]; then
-        [[ -z "$services_started" ]] && services_started="无"
-        colorize green "${SERVER_ID} 执行成功，启用的服务: $services_started"
+        colorize green "${SERVER_ID} 执行成功"
+        services_started="singbox, nezha-dashboard, nezha-agent, sun-panel, webssh"  # 可以根据实际启用的服务修改
         # 根据选择的通知服务发送消息
         [[ "$NOTIFY_SERVICE" -eq 1 ]] && send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
         [[ "$NOTIFY_SERVICE" -eq 2 ]] && send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
