@@ -55,8 +55,8 @@
 {
   "NOTIFICATION": 1,
   "TELEGRAM_CONFIG": {
-    "BOT_TOKEN": "7632093319:AAFtgOWj6YenazWR5NqmmaHfU1RIJo0uhD0",
-    "CHAT_ID": "5230469074"
+    "BOT_TOKEN": "123456",
+    "CHAT_ID": "234574"
   },
   "SERVERS": [
     {
