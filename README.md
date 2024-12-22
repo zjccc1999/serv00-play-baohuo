@@ -35,7 +35,7 @@
 命令
 `task serv00-ql.sh`
 青龙面板示例：
-![青龙.png](https://jpg.zjccc.us.kg/file/1734808193305_青龙.png)
+![青龙细化通知方式.png](https://jpg.zjccc.us.kg/file/1734877473027_青龙细化通知方式.png)
 
 # vps教程
 - **serv00vps 是vps保活脚本**
