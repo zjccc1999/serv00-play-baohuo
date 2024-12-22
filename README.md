@@ -16,12 +16,12 @@
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
 | 环境变量                | 描述                             | 默认值            |
 |------------------------|----------------------------------|------------------|
-| `SERVERS`              | 服务器信息，格式为 `user:pass:host`，多个服务器用逗号分隔 | 无               |
-| `BOT_TOKEN`            | Telegram Bot Token               | 无               |
-| `CHAT_ID`              | Telegram Chat ID                 | 无               |
-| `WXPUSHER_TOKEN`       | WxPusher Token                   | 无               |
-| `PUSHPLUS_TOKEN`       | PushPlus Token                   | 无               |
-| `WXPUSHER_USER_ID`     | WxPusher 用户 ID                 | 无               |
+| `SERVERS`              | 服务器信息，格式为 `user:pass:host`，多个服务器用逗号分隔 | 无    必填           |
+| `BOT_TOKEN`            | Telegram Bot Token               | 无        选填       |
+| `CHAT_ID`              | Telegram Chat ID                 | 无        选填         |
+| `WXPUSHER_TOKEN`       | WxPusher Token                   | 无        选填         |
+| `PUSHPLUS_TOKEN`       | PushPlus Token                   | 无       选填          |
+| `WXPUSHER_USER_ID`     | WxPusher 用户 ID                 | 无        选填         |
 | `NOTIFY_SERVICE`       | 通知服务选择 (0: 不启用, 1: TG, 2: WxPusher, 3: PushPlus, 4: TG+WxPusher, 5: TG+PushPlus) | `0` (不启用通知) |
 | `NEZHA_DASHBOARD`      | 是否启用 Nezha Dashboard 服务   | `2` (不启用)     |
 | `NEZHA_AGENT`          | 是否启用 Nezha Agent 服务       | `2` (不启用)     |
