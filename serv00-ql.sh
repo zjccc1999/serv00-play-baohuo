@@ -4,6 +4,12 @@
 SERVERS="${SERVERS:-}"  # 多个服务器信息，格式为 user:pass:host 用逗号分隔
 BOT_TOKEN="${BOT_TOKEN:-}"  # Telegram Bot Token，可选
 CHAT_ID="${CHAT_ID:-}"      # Telegram Chat ID，可选
+WXPUSHER_TOKEN="${WXPUSHER_TOKEN:-}"  # WxPusher Token
+PUSHPLUS_TOKEN="${PUSHPLUS_TOKEN:-}"  # PushPlus Token
+WXPUSHER_USER_ID="${WXPUSHER_USER_ID:-}"  # WxPusher User ID
+
+# 通知服务选择（0: 不启用，1: TG，2: WxPusher，3: PushPlus，4: TG+WxPusher，5: TG+PushPlus）
+NOTIFY_SERVICE="${NOTIFY_SERVICE:-0}"  # 默认为 0（不启用通知）
 
 # 控制每个服务是否运行，默认值为 2（不运行）
 NEZHA_DASHBOARD="${NEZHA_DASHBOARD:-2}"  # 默认不运行
@@ -34,6 +40,65 @@ send_tg_notification() {
         echo "Telegram 消息发送失败，错误代码: $response"
     fi
 }
+
+# WxPusher 发送消息函数
+send_wxpusher_message() {
+  local title="$1"
+  local content="$2"
+  curl -s -X POST "https://wxpusher.zjiecode.com/api/send/message" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"appToken\": \"$WXPUSHER_TOKEN\",
+      \"content\": \"$content\",
+      \"title\": \"$title\",
+      \"uids\": [\"$WXPUSHER_USER_ID\"]
+    }" > /dev/null 2>&1
+}
+
+# 发送 PushPlus 消息的函数
+send_pushplus_message() {
+  local title="$1"
+  local content="$2"
+  curl -s -X POST "http://www.pushplus.plus/send" \
+    -H "Content-Type: application/json" \
+    -d "{\"token\":\"$PUSHPLUS_TOKEN\",\"title\":\"$title\",\"content\":\"<pre>$content</pre>\"}" > /dev/null 2>&1
+}
+
+# 初始化结果汇总并增加表头
+RESULT_SUMMARY="青龙自动化结果：\n--------------\n"
+
+# 显示启用的通知服务和服务
+echo "启用的通知服务："
+if [ "$NOTIFY_SERVICE" -eq 1 ]; then
+    echo "Telegram"
+elif [ "$NOTIFY_SERVICE" -eq 2 ]; then
+    echo "WxPusher"
+elif [ "$NOTIFY_SERVICE" -eq 3 ]; then
+    echo "PushPlus"
+elif [ "$NOTIFY_SERVICE" -eq 4 ]; then
+    echo "Telegram 和 WxPusher"
+elif [ "$NOTIFY_SERVICE" -eq 5 ]; then
+    echo "Telegram 和 PushPlus"
+else
+    echo "没有启用通知"
+fi
+
+echo "启用的服务："
+if [ "$SINGBOX" -eq 1 ]; then
+    echo "Singbox"
+fi
+if [ "$NEZHA_DASHBOARD" -eq 1 ]; then
+    echo "Nezha Dashboard"
+fi
+if [ "$NEZHA_AGENT" -eq 1 ]; then
+    echo "Nezha Agent"
+fi
+if [ "$SUN_PANEL" -eq 1 ]; then
+    echo "Sun Panel"
+fi
+if [ "$WEB_SSH" -eq 1 ]; then
+    echo "Web SSH"
+fi
 
 # 遍历每个服务器
 IFS=',' read -ra SERVER_LIST <<< "$SERVERS"  # 按逗号分隔服务器列表
@@ -98,9 +163,37 @@ EOF
             services_started="无"
         fi
         echo "${SERVER_ID} 执行成功，启用的服务: $services_started"
-        send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
+
+        # 根据选择的通知服务发送消息
+        if [ "$NOTIFY_SERVICE" -eq 1 ]; then
+            send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
+        elif [ "$NOTIFY_SERVICE" -eq 2 ]; then
+            send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
+        elif [ "$NOTIFY_SERVICE" -eq 3 ]; then
+            send_pushplus_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
+        elif [ "$NOTIFY_SERVICE" -eq 4 ]; then
+            send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
+            send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
+        elif [ "$NOTIFY_SERVICE" -eq 5 ]; then
+            send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
+            send_pushplus_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
+        fi
     else
         echo "${SERVER_ID} 执行失败"
-        send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
+
+        # 根据选择的通知服务发送消息
+        if [ "$NOTIFY_SERVICE" -eq 1 ]; then
+            send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
+        elif [ "$NOTIFY_SERVICE" -eq 2 ]; then
+            send_wxpusher_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
+        elif [ "$NOTIFY_SERVICE" -eq 3 ]; then
+            send_pushplus_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
+        elif [ "$NOTIFY_SERVICE" -eq 4 ]; then
+            send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
+            send_wxpusher_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
+        elif [ "$NOTIFY_SERVICE" -eq 5 ]; then
+            send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
+            send_pushplus_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
+        fi
     fi
 done
