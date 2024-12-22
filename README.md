@@ -1,6 +1,6 @@
 # serv00-play 配套保活
 
-## 20241222更新 增加了多个通知方式
+## 2024/12/23/00:45 更新serv00-ql  增加了多个通知方式
 
 感谢[饭奇骏大佬的serv00-play项目](https://github.com/frankiejun).  [serv00-play项目地址](https://github.com/frankiejun/serv00-play).
 
