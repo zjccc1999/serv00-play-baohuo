@@ -39,7 +39,7 @@
 命令
 `task serv00-ql.sh`
 青龙面板示例：
-![青龙细化通知方式.png](https://jpg.zjccc.us.kg/file/1734877473027_青龙细化通知方式.png)
+![青龙细化通知方式.png](https://jpg.zjccc.us.kg/file/1734885865851_青龙细化通知方式.png)
 
 # vps教程
 **1开 2关**
@@ -124,7 +124,7 @@
 
 VPS示例:
 
-![vps.png](https://jpg.zjccc.us.kg/file/1734808193445_vps.png)
+![vps.png](https://jpg.zjccc.us.kg/file/1734885866468_vps.png)
 
 
 ### 后续可自行添加 
