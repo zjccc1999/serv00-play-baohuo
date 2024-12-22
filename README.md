@@ -1,6 +1,6 @@
 # serv00-play 配套保活
 
-## 20241222更新
+## 20241222更新 增加了多个通知方式
 
 感谢[饭奇骏大佬的serv00-play项目](https://github.com/frankiejun).  [serv00-play项目地址](https://github.com/frankiejun/serv00-play).
 
@@ -43,40 +43,44 @@
 注意:务必将`serv00.json` 文件存入私库或其他支持直链的云盘，避免信息泄露。git私库文件可用CM的私库项目获取可访问的直链 [cmliu / CF-Workers-Raw](https://github.com/zjccc1999?submit=Search&q=raw&tab=stars&type=&sort=&direction=&submit=Search)
 ```
 {
-  "TELEGRAM_CONFIG": {
-    "BOT_TOKEN": "",
-    "CHAT_ID": ""
-  },
-  "SERVERS": [
-    {
-      "HOST": "cache14.serv00.com",
-      "SSH_USER": "用户名",
-      "SSH_PASS": "密码"
+    "NOTIFICATION": 4,  #设置通知的启用类型，1 = TG, 2 = WxPusher, 3 = PushPlus, 4 = TG + WxPusher, 5 = TG + PushPlus
+    "TELEGRAM_CONFIG": {
+        "BOT_TOKEN": "your-telegram-bot-token",
+        "CHAT_ID": "your-chat-id"
     },
-    {
-      "HOST": "cache14.serv00.com",
-      "SSH_USER": "",
-      "SSH_PASS": ""
+    "WXPUSHER_CONFIG": {
+        "TOKEN": "your-wxpusher-app-token",
+        "USER_ID": "your-wxpusher-user-id"
     },
-    {
-      "HOST": "cache14.serv00.com",
-      "SSH_USER": "",
-      "SSH_PASS": ""
+    "PUSHPLUS_CONFIG": {
+        "TOKEN": "your-pushplus-token"
     },
-    {
-      "HOST": "cache14.serv00.com",
-      "SSH_USER": "",
-      "SSH_PASS": ""
-    }
-  ],
-  "FEATURES": {
-    "SINGBOX": 1,
-    "NEZHA_DASHBOARD": 2,
-    "NEZHA_AGENT": 2,
-    "SUN_PANEL": 2,
-    "WEB_SSH": 2
-  }
+    "FEATURES": {
+        "SINGBOX": 1,
+        "NEZHA_DASHBOARD": 1,
+        "NEZHA_AGENT": 1,
+        "SUN_PANEL": 0,
+        "WEB_SSH": 1
+    },
+    "SERVERS": [
+        {
+            "SSH_USER": "user1",
+            "SSH_PASS": "password1",
+            "HOST": "bgbfhtdfe-cache14.serv00.com"
+        },
+        {
+            "SSH_USER": "user2",
+            "SSH_PASS": "password2",
+            "HOST": "ssszjccc14-cache14.serv00.com"
+        },
+        {
+            "SSH_USER": "user3",
+            "SSH_PASS": "password3",
+            "HOST": "zjccc1411-cache14.serv00.com"
+        }
+    ]
 }
+
 ```
 **1开 2关**
 # 注意
