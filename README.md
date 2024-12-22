@@ -23,11 +23,11 @@
 | `PUSHPLUS_TOKEN`       | PushPlus Token                   | 无       选填          |
 | `WXPUSHER_USER_ID`     | WxPusher 用户 ID                 | 无        选填         |
 | `NOTIFY_SERVICE`       | 通知服务选择 (0: 不启用, 1: TG, 2: WxPusher, 3: PushPlus, 4: TG+WxPusher, 5: TG+PushPlus) | `0` (不启用通知) |
-| `NEZHA_DASHBOARD`      | 是否启用 Nezha Dashboard 服务   | `2` (不启用)     |
-| `NEZHA_AGENT`          | 是否启用 Nezha Agent 服务       | `2` (不启用)     |
-| `SUN_PANEL`            | 是否启用 Sun Panel 服务         | `2` (不启用)     |
-| `WEB_SSH`              | 是否启用 Web SSH 服务           | `2` (不启用)     |
-| `SINGBOX`              | 是否启用 Singbox 服务           | `1` (启用)       |
+| `NEZHA_DASHBOARD`      | 是否启用 Nezha Dashboard 服务   | `2` (不启用)   选填    | 
+| `NEZHA_AGENT`          | 是否启用 Nezha Agent 服务       | `2` (不启用)    选填   |
+| `SUN_PANEL`            | 是否启用 Sun Panel 服务         | `2` (不启用)    选填   |
+| `WEB_SSH`              | 是否启用 Web SSH 服务           | `2` (不启用)    选填   |
+| `SINGBOX`              | 是否启用 Singbox 服务           | `1` (启用)      选填   |
 
 
 推荐8小时运行一次
