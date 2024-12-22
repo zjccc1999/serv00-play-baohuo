@@ -53,43 +53,65 @@
 注意:务必将`serv00.json` 文件存入私库或其他支持直链的云盘，避免信息泄露。git私库文件可用CM的私库项目获取可访问的直链 [cmliu / CF-Workers-Raw](https://github.com/zjccc1999?submit=Search&q=raw&tab=stars&type=&sort=&direction=&submit=Search)
 ```
 {
-    "NOTIFICATION": 4,  #设置通知的启用类型，1 = TG, 2 = WxPusher, 3 = PushPlus, 4 = TG + WxPusher, 5 = TG + PushPlus
-    "TELEGRAM_CONFIG": {
-        "BOT_TOKEN": "your-telegram-bot-token",
-        "CHAT_ID": "your-chat-id"
+  "NOTIFICATION": 1,
+  "TELEGRAM_CONFIG": {
+    "BOT_TOKEN": "7632093319:AAFtgOWj6YenazWR5NqmmaHfU1RIJo0uhD0",
+    "CHAT_ID": "5230469074"
+  },
+  "SERVERS": [
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "xxxx",
+      "SSH_PASS": "xxxx" 
     },
-    "WXPUSHER_CONFIG": {
-        "TOKEN": "your-wxpusher-app-token",
-        "USER_ID": "your-wxpusher-user-id"
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "sxxxx4012",
+      "SSH_PASS": "Zxxxx&)%"
     },
-    "PUSHPLUS_CONFIG": {
-        "TOKEN": "your-pushplus-token"
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "xxx",
+      "SSH_PASS": "xxx"
     },
-    "FEATURES": {
-        "SINGBOX": 1,
-        "NEZHA_DASHBOARD": 1,
-        "NEZHA_AGENT": 1,
-        "SUN_PANEL": 0,
-        "WEB_SSH": 1
-    },
-    "SERVERS": [
-        {
-            "SSH_USER": "user1",
-            "SSH_PASS": "password1",
-            "HOST": "bgbfhtdfe-cache14.serv00.com"
-        },
-        {
-            "SSH_USER": "user2",
-            "SSH_PASS": "password2",
-            "HOST": "ssszjccc14-cache14.serv00.com"
-        },
-        {
-            "SSH_USER": "user3",
-            "SSH_PASS": "password3",
-            "HOST": "zjccc1411-cache14.serv00.com"
-        }
-    ]
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "xx14",
+      "SSH_PASS": "xxxxx)%"
+    }
+  ],
+  "FEATURES": {
+    "SINGBOX": 1,
+    "NEZHA_DASHBOARD": 2,
+    "NEZHA_AGENT": 1,
+    "SUN_PANEL": 2,
+    "WEB_SSH": 2
+  }
 }
+# JSON 配置说明
+
+## NOTIFICATION
+- `1`：启用 Telegram 通知
+- `2`：不启用任何通知
+
+## TELEGRAM_CONFIG
+- `BOT_TOKEN`：Telegram 机器人的 Token。
+- `CHAT_ID`：用于接收通知的 Telegram 聊天 ID。
+
+## SERVERS
+配置服务器的 SSH 连接信息：
+- `HOST`：服务器的主机名或 IP 地址
+- `SSH_USER`：SSH 用户名
+- `SSH_PASS`：SSH 密码
+
+## FEATURES
+启用的功能服务：
+- `SINGBOX`：启用或禁用 SingBox 服务
+- `NEZHA_DASHBOARD`：启用或禁用 Nezha Dashboard 服务
+- `NEZHA_AGENT`：启用或禁用 Nezha Agent 服务
+- `SUN_PANEL`：启用或禁用 Sun Panel 服务
+- `WEB_SSH`：启用或禁用 Web SSH 服务
+
 
 ```
 
