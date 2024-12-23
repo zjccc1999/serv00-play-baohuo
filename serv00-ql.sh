@@ -102,7 +102,8 @@ for SERVER in "${SERVER_LIST[@]}"; do
     [[ "$NEZHA_DASHBOARD" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || true; pkill -f 'nezha-dashboard' || true; nohup ./nezha-dashboard > nezha-dashboard_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
     [[ "$NEZHA_AGENT" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pkill -f 'nezha-agent' || true; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
     [[ "$SUN_PANEL" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$WEB_SSH" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh > webssh_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    [[ "$WEB_SSH" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh --port=\$(jq -r '.port' config.json) --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10 > webssh_\$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+
 
     # 执行命令并检查是否成功
     sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
