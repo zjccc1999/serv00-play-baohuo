@@ -16,7 +16,7 @@ CRON_JOB="0 */8 * * * $SCRIPT_PATH"  # 使用自动获取的脚本路径
 if crontab -l | grep -F "$CRON_JOB" > /dev/null; then
     echo -e "${GREEN}定时任务已存在，跳过添加${NC}"
 else
-    (crontab -l; echo "$CRON_JOB") | crontab -
+    (crontab -l; echo "$CRON_JOB") | crontab - 
     echo -e "${YELLOW}已添加定时任务，每8小时执行一次${NC}"
 fi
 
@@ -49,7 +49,7 @@ install_packages
 
 # 下载配置文件
 download_json() {
-    VPS_JSON_URL="https://替换你的地址/serv00.json"  # 配置文件 URL
+    VPS_JSON_URL="https://xxxxxxxxxxxxx/serv00.json"  # 配置文件 URL
     if ! curl -s "$VPS_JSON_URL" -o serv00.json; then
         echo -e "${RED}配置文件下载失败，尝试使用 wget 下载！${NC}"
         if ! wget -q "$VPS_JSON_URL" -O serv00.json; then
@@ -70,15 +70,13 @@ download_json() {
 
 download_json
 
-# 解析 Telegram 配置
+# 解析配置文件
 BOT_TOKEN=$(jq -r '.TELEGRAM_CONFIG.BOT_TOKEN' serv00.json)
 CHAT_ID=$(jq -r '.TELEGRAM_CONFIG.CHAT_ID' serv00.json)
 
 # 解析通知方式
 NOTIFICATION=$(jq -r '.NOTIFICATION' serv00.json)
 ENABLED_NOTIFICATIONS=""
-
-# 根据通知方式启用相应的通知
 if [ "$NOTIFICATION" -eq 1 ]; then
     ENABLED_NOTIFICATIONS+="Telegram "
 elif [ "$NOTIFICATION" -eq 2 ]; then
@@ -87,7 +85,6 @@ else
     ENABLED_NOTIFICATIONS="无通知"
 fi
 
-# 输出启用的通知方式
 echo -e "${YELLOW}当前启用的通知方式：${NC} $ENABLED_NOTIFICATIONS"
 
 # 获取功能开关
@@ -97,6 +94,19 @@ NEZHA_AGENT=$(jq -r '.FEATURES.NEZHA_AGENT' serv00.json)
 SUN_PANEL=$(jq -r '.FEATURES.SUN_PANEL' serv00.json)
 WEB_SSH=$(jq -r '.FEATURES.WEB_SSH' serv00.json)
 ALIST=$(jq -r '.FEATURES.ALIST' serv00.json)
+
+# 检查 ENABLE_ALL_SERVICES
+ENABLE_ALL_SERVICES=$(jq -r '.ENABLE_ALL_SERVICES' serv00.json)
+
+# 如果 ENABLE_ALL_SERVICES 为 true，则启用所有服务
+if [ "$ENABLE_ALL_SERVICES" == "true" ]; then
+    SINGBOX=1
+    NEZHA_DASHBOARD=1
+    NEZHA_AGENT=1
+    SUN_PANEL=1
+    WEB_SSH=1
+    ALIST=1
+fi
 
 ENABLED_SERVICES=""
 
@@ -117,12 +127,7 @@ if [ "$ALIST" -eq 1 ]; then
     ENABLED_SERVICES+="ALIST "
 fi
 
-# 输出启用的服务
-if [ -n "$ENABLED_SERVICES" ]; then
-    echo -e "${YELLOW}当前启用的服务：${NC} $ENABLED_SERVICES"
-else
-    echo -e "${YELLOW}没有启用任何服务。${NC}"
-fi
+echo -e "${YELLOW}当前启用的服务：${NC} $ENABLED_SERVICES"
 
 # 发送 Telegram 通知的函数
 send_tg_notification() {
@@ -131,7 +136,6 @@ send_tg_notification() {
         -d "chat_id=$CHAT_ID" \
         -d "text=$message")
     
-    # 检查发送是否成功
     if [[ "$response" == *"ok"* ]]; then
         echo -e "${GREEN}通知发送成功！${NC}"
     else
@@ -139,7 +143,19 @@ send_tg_notification() {
     fi
 }
 
-# 执行 SSH 操作
+# 统一检查各个服务的目录是否存在，跳过不存在的目录
+check_and_add_service() {
+    local service_name=$1
+    local service_path=$2
+    if sshpass -p "$SSH_PASS" ssh -o LogLevel=QUIET -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST" "test -d $service_path"; then
+        ssh_cmd+="cd $service_path || true; pkill -f '$service_name' || true; nohup ./$service_name > ${service_name}_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+        services_started+="$service_name, "
+    else
+        echo -e "${RED}目录 $service_path 不存在，跳过 $service_name 服务${NC}"
+    fi
+}
+
+# 遍历每个服务器执行 SSH 操作
 for SERVER in $(jq -c '.SERVERS[]' serv00.json); do
     SSH_USER=$(echo "$SERVER" | jq -r '.SSH_USER')
     SSH_PASS=$(echo "$SERVER" | jq -r '.SSH_PASS')
@@ -147,58 +163,33 @@ for SERVER in $(jq -c '.SERVERS[]' serv00.json); do
 
     SERVER_ID="${SSH_USER}-${SSH_HOST}"
 
-    # 输出开始执行的消息
     echo -e "${YELLOW}开始执行 $SERVER_ID${NC}"
 
-    # 执行 SSH 操作
-    sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
-    # 根据功能开关判断是否需要重启服务
-    if [ "$SINGBOX" -eq 1 ]; then
-        pkill -f "singbox" || true
-        cd /home/$SSH_USER/serv00-play/singbox || true
-        nohup ./start.sh > serv00-play.log 2>&1 &
-    fi
+    ssh_cmd=""
+    services_started=""
 
-    if [ "$NEZHA_AGENT" -eq 1 ]; then
-        pkill -f "nezha-agent" || true
-        cd /home/$SSH_USER/nezha_app/agent || true
-        nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
-    fi
+    # 依次检查每个服务的目录并启动
+    [[ "$SINGBOX" -eq 1 ]] && check_and_add_service "singbox" "/home/$SSH_USER/serv00-play/singbox"
+    [[ "$NEZHA_DASHBOARD" -eq 1 ]] && check_and_add_service "nezha-dashboard" "/home/$SSH_USER/nezha_app/dashboard"
+    [[ "$NEZHA_AGENT" -eq 1 ]] && check_and_add_service "nezha-agent" "/home/$SSH_USER/nezha_app/agent"
+    [[ "$SUN_PANEL" -eq 1 ]] && check_and_add_service "sun-panel" "/home/$SSH_USER/serv00-play/sunpanel"
+    [[ "$WEB_SSH" -eq 1 ]] && check_and_add_service "wssh" "/home/$SSH_USER/serv00-play/webssh"
+    [[ "$ALIST" -eq 1 ]] && check_and_add_service "alist" "/home/$SSH_USER/serv00-play/alist"
 
-    if [ "$SUN_PANEL" -eq 1 ]; then
-        pkill -f "sun-panel" || true
-        cd /home/$SSH_USER/serv00-play/sunpanel || true
-        nohup ./sun-panel > sunpanel.log 2>&1 &
-    fi
-
-    if [ "$WEB_SSH" -eq 1 ]; then
-        pkill -f "wssh" || true
-        cd /home/$SSH_USER/serv00-play/webssh || true
-        nohup ./wssh --port=\$(jq -r '.port' config.json) --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10 > webssh_\$(date +%Y%m%d_%H%M%S).log 2>&1 &
-    fi
-
-    if [ "$ALIST" -eq 1 ]; then
-        pkill -f "alist" || true
-        cd /home/$SSH_USER/serv00-play/alist || true
-        nohup ./alist server > alist.log 2>&1 &
-    fi
-
-    ps -A
-    exit
-EOF
+    # 执行构建的 SSH 命令
+    sshpass -p "$SSH_PASS" ssh -o LogLevel=QUIET -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST" "$ssh_cmd"
 
     # 检查 SSH 执行状态
     if [ $? -eq 0 ]; then
-        # 成功通知
-        if [ "$NOTIFICATION" -eq 1 ]; then
-            send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $ENABLED_SERVICES"
+        if [ -n "$services_started" ]; then
+            services_started=${services_started%, }  # 去掉最后的逗号
+            if [ "$NOTIFICATION" -eq 1 ]; then
+                send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：已执行服务：$services_started"
+            fi
+        else
+            echo -e "${RED}没有服务被启动，跳过通知！${NC}"
         fi
-        echo -e "${GREEN}$SERVER_ID 执行成功，启用的服务: $ENABLED_SERVICES${NC}"
     else
-        # 失败通知
-        if [ "$NOTIFICATION" -eq 1 ]; then
-            send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
-        fi
-        echo -e "${RED}$SERVER_ID 执行失败${NC}"
+        echo -e "${RED}SSH 执行失败：$SERVER_ID${NC}"
     fi
 done
