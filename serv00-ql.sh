@@ -29,6 +29,7 @@ NEZHA_DASHBOARD="${NEZHA_DASHBOARD:-2}"  # 默认不运行
 NEZHA_AGENT="${NEZHA_AGENT:-2}"          # 默认不运行
 SUN_PANEL="${SUN_PANEL:-2}"              # 默认不运行
 WEB_SSH="${WEB_SSH:-2}"                  # 默认不运行
+ALIST="${ALIST:-2}"                      # 默认不运行 Alist
 
 # 默认启动 SINGBOX
 SINGBOX="${SINGBOX:-1}"                  # 默认运行 singbox
@@ -85,6 +86,7 @@ colorize blue "启用的服务："
 [[ "$NEZHA_AGENT" -eq 1 ]] && colorize green "Nezha Agent"
 [[ "$SUN_PANEL" -eq 1 ]] && colorize green "Sun Panel"
 [[ "$WEB_SSH" -eq 1 ]] && colorize green "Web SSH"
+[[ "$ALIST" -eq 1 ]] && colorize green "Alist"
 
 # 遍历每个服务器
 IFS=',' read -ra SERVER_LIST <<< "$SERVERS"  # 按逗号分隔服务器列表
@@ -103,7 +105,7 @@ for SERVER in "${SERVER_LIST[@]}"; do
     [[ "$NEZHA_AGENT" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pkill -f 'nezha-agent' || true; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
     [[ "$SUN_PANEL" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
     [[ "$WEB_SSH" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh --port=\$(jq -r '.port' config.json) --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10 > webssh_\$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-
+    [[ "$ALIST" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/alist || true; nohup ./alist server > alist_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
 
     # 执行命令并检查是否成功
     sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
@@ -114,7 +116,7 @@ EOF
 
     if [ $? -eq 0 ]; then
         colorize green "${SERVER_ID} 执行成功"
-        services_started="singbox, nezha-dashboard, nezha-agent, sun-panel, webssh"  # 可以根据实际启用的服务修改
+        services_started="singbox, nezha-dashboard, nezha-agent, sun-panel, webssh, alist"  # 可以根据实际启用的服务修改
         # 根据选择的通知服务发送消息
         [[ "$NOTIFY_SERVICE" -eq 1 ]] && send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
         [[ "$NOTIFY_SERVICE" -eq 2 ]] && send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
