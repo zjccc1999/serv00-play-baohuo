@@ -34,6 +34,20 @@ ALIST="${ALIST:-2}"                      # 默认不运行 Alist
 # 默认启动 SINGBOX
 SINGBOX="${SINGBOX:-1}"                  # 默认运行 singbox
 
+# 启用所有服务的标志（默认为 false，不启用所有服务）
+ENABLE_ALL_SERVICES="${ENABLE_ALL_SERVICES:-false}"
+
+# 如果启用所有服务，则设置每个服务为启用状态
+if [ "$ENABLE_ALL_SERVICES" == "true" ]; then
+    SINGBOX=1
+    NEZHA_DASHBOARD=1
+    NEZHA_AGENT=1
+    SUN_PANEL=1
+    WEB_SSH=1
+    ALIST=1
+    colorize green "已启用所有服务"
+fi
+
 # 自定义 Telegram 通知函数（当 BOT_TOKEN 和 CHAT_ID 存在时才启用）
 send_tg_notification() {
     local message=$1
@@ -45,29 +59,36 @@ send_tg_notification() {
 
 # WxPusher 发送消息函数
 send_wxpusher_message() {
-  local title="$1"
-  local content="$2"
-  curl -s -X POST "https://wxpusher.zjiecode.com/api/send/message" \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"appToken\": \"$WXPUSHER_TOKEN\",
-      \"content\": \"$content\",
-      \"title\": \"$title\",
-      \"uids\": [\"$WXPUSHER_USER_ID\"]
-    }" > /dev/null 2>&1
+    local title="$1"
+    local content="$2"
+    curl -s -X POST "https://wxpusher.zjiecode.com/api/send/message" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"appToken\": \"$WXPUSHER_TOKEN\",
+            \"content\": \"$content\",
+            \"title\": \"$title\",
+            \"uids\": [\"$WXPUSHER_USER_ID\"]
+        }" > /dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        colorize green "WxPusher 消息发送成功"
+    else
+        colorize red "WxPusher 消息发送失败"
+    fi
 }
 
 # 发送 PushPlus 消息的函数
 send_pushplus_message() {
-  local title="$1"
-  local content="$2"
-  curl -s -X POST "http://www.pushplus.plus/send" \
-    -H "Content-Type: application/json" \
-    -d "{\"token\":\"$PUSHPLUS_TOKEN\",\"title\":\"$title\",\"content\":\"<pre>$content</pre>\"}" > /dev/null 2>&1
+    local title="$1"
+    local content="$2"
+    curl -s -X POST "http://www.pushplus.plus/send" \
+        -H "Content-Type: application/json" \
+        -d "{\"token\":\"$PUSHPLUS_TOKEN\",\"title\":\"$title\",\"content\":\"<pre>$content</pre>\"}" > /dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        colorize green "PushPlus 消息发送成功"
+    else
+        colorize red "PushPlus 消息发送失败"
+    fi
 }
-
-# 初始化结果汇总并增加表头
-RESULT_SUMMARY="青龙自动化结果：\n--------------\n"
 
 # 显示启用的通知服务和服务
 colorize blue "启用的通知服务："
@@ -88,7 +109,7 @@ colorize blue "启用的服务："
 [[ "$WEB_SSH" -eq 1 ]] && colorize green "Web SSH"
 [[ "$ALIST" -eq 1 ]] && colorize green "Alist"
 
-# 遍历每个服务器
+# 将逗号分隔的账户信息解析成一个数组
 IFS=',' read -ra SERVER_LIST <<< "$SERVERS"  # 按逗号分隔服务器列表
 for SERVER in "${SERVER_LIST[@]}"; do
     # 分解每个服务器的用户名、密码、地址
@@ -98,38 +119,52 @@ for SERVER in "${SERVER_LIST[@]}"; do
     colorize yellow "开始执行 ${SERVER_ID}"
 
     ssh_cmd=""
+    services_started=""
 
-    # 执行服务命令（按需启动）
-    [[ "$SINGBOX" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/singbox || true; pkill -f 'singbox' || true; nohup ./start.sh > singbox_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$NEZHA_DASHBOARD" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/dashboard || true; pkill -f 'nezha-dashboard' || true; nohup ./nezha-dashboard > nezha-dashboard_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$NEZHA_AGENT" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/nezha_app/agent || true; pkill -f 'nezha-agent' || true; nohup sh nezha-agent.sh > nezha-agent_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$SUN_PANEL" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/sunpanel || true; nohup ./sun-panel > sunpanel_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$WEB_SSH" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/serv00-play/webssh || true; nohup ./wssh --port=\$(jq -r '.port' config.json) --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10 > webssh_\$(date +%Y%m%d_%H%M%S).log 2>&1 & "
-    [[ "$ALIST" -eq 1 ]] && ssh_cmd+="cd /home/$SSH_USER/alist || true; nohup ./alist server > alist_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+    # 统一检查各个服务的目录是否存在，跳过不存在的目录
+    check_and_add_service() {
+        local service_name=$1
+        local service_path=$2
+        if sshpass -p "$SSH_PASS" ssh -o LogLevel=QUIET -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST" "test -d $service_path"; then
+            ssh_cmd+="cd $service_path || true; pkill -f '$service_name' || true; nohup ./$service_name > ${service_name}_$(date +%Y%m%d_%H%M%S).log 2>&1 & "
+            services_started+="$service_name, "
+        else
+            colorize red "目录 $service_path 不存在，跳过 $service_name 服务"
+        fi
+    }
 
-    # 执行命令并检查是否成功
-    sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
-$ssh_cmd
-ps -A > /dev/null 2>&1
-exit
-EOF
+    # 依次检查每个服务的目录并启动
+    [[ "$SINGBOX" -eq 1 ]] && check_and_add_service "singbox" "/home/$SSH_USER/serv00-play/singbox"
+    [[ "$NEZHA_DASHBOARD" -eq 1 ]] && check_and_add_service "nezha-dashboard" "/home/$SSH_USER/nezha_app/dashboard"
+    [[ "$NEZHA_AGENT" -eq 1 ]] && check_and_add_service "nezha-agent" "/home/$SSH_USER/nezha_app/agent"
+    [[ "$SUN_PANEL" -eq 1 ]] && check_and_add_service "sun-panel" "/home/$SSH_USER/serv00-play/sunpanel"
+    [[ "$WEB_SSH" -eq 1 ]] && check_and_add_service "wssh" "/home/$SSH_USER/serv00-play/webssh"
+    [[ "$ALIST" -eq 1 ]] && check_and_add_service "alist" "/home/$SSH_USER/alist"
 
-    if [ $? -eq 0 ]; then
+    # 执行构建的 SSH 命令
+    sshpass -p "$SSH_PASS" ssh -o LogLevel=QUIET -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST" "$ssh_cmd"
+
+    # 如果有启动的服务，发送通知
+    if [ -n "$services_started" ]; then
+        services_started=${services_started%, }  # 去掉最后的逗号
         colorize green "${SERVER_ID} 执行成功"
-        services_started="singbox, nezha-dashboard, nezha-agent, sun-panel, webssh, alist"  # 可以根据实际启用的服务修改
-        # 根据选择的通知服务发送消息
-        [[ "$NOTIFY_SERVICE" -eq 1 ]] && send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"
-        [[ "$NOTIFY_SERVICE" -eq 2 ]] && send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
-        [[ "$NOTIFY_SERVICE" -eq 3 ]] && send_pushplus_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"
-        [[ "$NOTIFY_SERVICE" -eq 4 ]] && { send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"; send_wxpusher_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"; }
-        [[ "$NOTIFY_SERVICE" -eq 5 ]] && { send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $services_started"; send_pushplus_message "执行完成" "服务器 [$SERVER_ID] 启动的服务: $services_started"; }
-    else
-        colorize red "${SERVER_ID} 执行失败"
-        # 根据选择的通知服务发送消息
-        [[ "$NOTIFY_SERVICE" -eq 1 ]] && send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
-        [[ "$NOTIFY_SERVICE" -eq 2 ]] && send_wxpusher_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
-        [[ "$NOTIFY_SERVICE" -eq 3 ]] && send_pushplus_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"
-        [[ "$NOTIFY_SERVICE" -eq 4 ]] && { send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"; send_wxpusher_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"; }
-        [[ "$NOTIFY_SERVICE" -eq 5 ]] && { send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"; send_pushplus_message "执行失败" "服务器 [$SERVER_ID] 执行失败，请检查。"; }
+
+        message="✅ ${SERVER_ID} 脚本执行完成：已执行服务：$services_started"
+
+        # 根据选择的通知方式发送消息
+        case "$NOTIFY_SERVICE" in
+            1) send_tg_notification "$message" ;;
+            2) send_wxpusher_message "$SERVER_ID 执行成功" "$message" ;;
+            3) send_pushplus_message "$SERVER_ID 执行成功" "$message" ;;
+            4)
+                send_tg_notification "$message"
+                send_wxpusher_message "$SERVER_ID 执行成功" "$message"
+                ;;
+            5)
+                send_tg_notification "$message"
+                send_pushplus_message "$SERVER_ID 执行成功" "$message"
+                ;;
+            *) colorize yellow "未启用通知服务" ;;
+        esac
     fi
 done
