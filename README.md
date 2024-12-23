@@ -67,29 +67,14 @@
 {
   "NOTIFICATION": 1,
   "TELEGRAM_CONFIG": {
-    "BOT_TOKEN": "123456",
-    "CHAT_ID": "234574"
+    "BOT_TOKEN": "your_bot_token",
+    "CHAT_ID": "your_chat_id"
   },
   "SERVERS": [
     {
-      "HOST": "s14.serv00.com",
-      "SSH_USER": "xxxx",
-      "SSH_PASS": "xxxx" 
-    },
-    {
-      "HOST": "s14.serv00.com",
-      "SSH_USER": "sxxxx4012",
-      "SSH_PASS": "Zxxxx&)%"
-    },
-    {
-      "HOST": "s14.serv00.com",
-      "SSH_USER": "xxx",
-      "SSH_PASS": "xxx"
-    },
-    {
-      "HOST": "s14.serv00.com",
-      "SSH_USER": "xx14",
-      "SSH_PASS": "xxxxx)%"
+      "HOST": "192.168.1.1",
+      "SSH_USER": "user",
+      "SSH_PASS": "password"
     }
   ],
   "FEATURES": {
@@ -97,35 +82,24 @@
     "NEZHA_DASHBOARD": 2,
     "NEZHA_AGENT": 1,
     "SUN_PANEL": 2,
-    "WEB_SSH": 2
+    "WEB_SSH": 1,
+    "ALIST": 2
   }
 }
 
 ```
-# JSON 配置说明
-
-## NOTIFICATION
-- `1`：启用 Telegram 通知
-- `2`：不启用任何通知
-
-## TELEGRAM_CONFIG
-- `BOT_TOKEN`：Telegram 机器人的 Token。
-- `CHAT_ID`：用于接收通知的 Telegram 聊天 ID。
-
-## SERVERS
-配置服务器的 SSH 连接信息：
-- `HOST`：服务器的主机名或 IP 地址
-- `SSH_USER`：SSH 用户名
-- `SSH_PASS`：SSH 密码
-
-## FEATURES
-启用的功能服务：
-- `SINGBOX`：启用或禁用 SingBox 服务
-- `NEZHA_DASHBOARD`：启用或禁用 Nezha Dashboard 服务
-- `NEZHA_AGENT`：启用或禁用 Nezha Agent 服务
-- `SUN_PANEL`：启用或禁用 Sun Panel 服务
-- `WEB_SSH`：启用或禁用 Web SSH 服务
-
+| 配置项                | 说明                                                                                   | 示例值                  |
+|-----------------------|----------------------------------------------------------------------------------------|-------------------------|
+| **NOTIFICATION**       | 通知方式，`1` 表示启用 Telegram 通知，`2` 表示不启用通知。                             | `1`                       |
+| **TELEGRAM_CONFIG**    | Telegram 配置，包含 `BOT_TOKEN` 和 `CHAT_ID`，用于发送通知。                         | `{ "BOT_TOKEN": "xxx", "CHAT_ID": "yyy" }` |
+| **SERVERS**            | 服务器列表，每个服务器包含 `HOST`（IP 地址）、`SSH_USER`（SSH 用户名）、`SSH_PASS`（SSH 密码）。 | `[ { "HOST": "192.168.1.1", "SSH_USER": "user", "SSH_PASS": "password" } ]` |
+| **FEATURES**           | 各种服务的开关配置，启用服务为 `1`，禁用服务为 `2`。                                      | `"SINGBOX": 1, "WEB_SSH": 1, "ALIST": 2` |
+| **SINGBOX**            | 启用 SINGBOX 服务，`1` 启用，`2` 禁用。                                                 | `1`                       |
+| **NEZHA_DASHBOARD**    | 启用 NEZHA Dashboard 服务，`1` 启用，`2` 禁用。                                          | `2`                       |
+| **NEZHA_AGENT**        | 启用 NEZHA Agent 服务，`1` 启用，`2` 禁用。                                              | `1`                       |
+| **SUN_PANEL**          | 启用 SUN PANEL 服务，`1` 启用，`2` 禁用。                                                | `2`                       |
+| **WEB_SSH**            | 启用 WEB SSH 服务，`1` 启用，`2` 禁用。                                                  | `1`                       |
+| **ALIST**              | 启用 ALIST 服务，`1` 启用，`2` 禁用。                                                    | `2`                       |
 
 
 # 注意
