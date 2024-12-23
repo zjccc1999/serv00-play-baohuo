@@ -96,6 +96,7 @@ NEZHA_DASHBOARD=$(jq -r '.FEATURES.NEZHA_DASHBOARD' serv00.json)
 NEZHA_AGENT=$(jq -r '.FEATURES.NEZHA_AGENT' serv00.json)
 SUN_PANEL=$(jq -r '.FEATURES.SUN_PANEL' serv00.json)
 WEB_SSH=$(jq -r '.FEATURES.WEB_SSH' serv00.json)
+ALIST=$(jq -r '.FEATURES.ALIST' serv00.json)
 
 ENABLED_SERVICES=""
 
@@ -111,6 +112,9 @@ if [ "$SUN_PANEL" -eq 1 ]; then
 fi
 if [ "$WEB_SSH" -eq 1 ]; then
     ENABLED_SERVICES+="WEB_SSH "
+fi
+if [ "$ALIST" -eq 1 ]; then
+    ENABLED_SERVICES+="ALIST "
 fi
 
 # 输出启用的服务
@@ -159,6 +163,24 @@ for SERVER in $(jq -c '.SERVERS[]' serv00.json); do
         pkill -f "nezha-agent" || true
         cd /home/$SSH_USER/nezha_app/agent || true
         nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
+    fi
+
+    if [ "$SUN_PANEL" -eq 1 ]; then
+        pkill -f "sun-panel" || true
+        cd /home/$SSH_USER/serv00-play/sunpanel || true
+        nohup ./sun-panel > sunpanel.log 2>&1 &
+    fi
+
+    if [ "$WEB_SSH" -eq 1 ]; then
+        pkill -f "wssh" || true
+        cd /home/$SSH_USER/serv00-play/webssh || true
+        nohup ./wssh --port=\$(jq -r '.port' config.json) --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10 > webssh_\$(date +%Y%m%d_%H%M%S).log 2>&1 &
+    fi
+
+    if [ "$ALIST" -eq 1 ]; then
+        pkill -f "alist" || true
+        cd /home/$SSH_USER/serv00-play/alist || true
+        nohup ./alist server > alist.log 2>&1 &
     fi
 
     ps -A
