@@ -18,20 +18,32 @@
 **1开 2关**
 
 使用变量名存储服务器信息，每个服务器用一个变量，例如：
-| 环境变量                | 描述                             | 默认值            |
-|------------------------|----------------------------------|------------------|
-| `SERVERS`              | 服务器信息，格式为 `user:pass:host`，多个服务器用逗号分隔 | 无    必填           |
-| `BOT_TOKEN`            | Telegram Bot Token               | 无        选填       |
-| `CHAT_ID`              | Telegram Chat ID                 | 无        选填         |
-| `WXPUSHER_TOKEN`       | WxPusher Token                   | 无        选填         |
-| `PUSHPLUS_TOKEN`       | PushPlus Token                   | 无       选填          |
-| `WXPUSHER_USER_ID`     | WxPusher 用户 ID                 | 无        选填         |
-| `NOTIFY_SERVICE`       | 通知服务选择 (0: 不启用, 1: TG, 2: WxPusher, 3: PushPlus, 4: TG+WxPusher, 5: TG+PushPlus) | `0` (不启用通知) |
-| `NEZHA_DASHBOARD`      | 是否启用 Nezha Dashboard 服务   | `2` (不启用)   选填    | 
-| `NEZHA_AGENT`          | 是否启用 Nezha Agent 服务       | `2` (不启用)    选填   |
-| `SUN_PANEL`            | 是否启用 Sun Panel 服务         | `2` (不启用)    选填   |
-| `WEB_SSH`              | 是否启用 Web SSH 服务           | `2` (不启用)    选填   |
-| `SINGBOX`              | 是否启用 Singbox 服务           | `1` (启用)      选填   |
+# 环境变量配置
+
+| 变量名               | 说明                                      | 默认值     | 必填项   |
+|----------------------|-------------------------------------------|------------|----------|
+| `SERVERS`            | 服务器信息列表，格式：`user:pass:host`，多个服务器用逗号分隔  | `""`       | 是       |
+| `BOT_TOKEN`          | Telegram Bot Token（可选）                | `""`       | 否       |
+| `CHAT_ID`            | Telegram Chat ID（可选）                  | `""`       | 否       |
+| `WXPUSHER_TOKEN`     | WxPusher Token                            | `""`       | 否       |
+| `PUSHPLUS_TOKEN`     | PushPlus Token                            | `""`       | 否       |
+| `WXPUSHER_USER_ID`   | WxPusher User ID                          | `""`       | 否       |
+| `NOTIFY_SERVICE`     | 通知服务选择：0: 不启用，1: 启用 Telegram，2: 启用 WxPusher，3: 启用 PushPlus，4: 启用 Telegram 和 WxPusher，5: 启用 Telegram 和 PushPlus | `0`        | 否       |
+| `NEZHA_DASHBOARD`    | 启用 Nezha Dashboard：1: 启用，2: 不启用  | `2`        | 否       |
+| `NEZHA_AGENT`        | 启用 Nezha Agent：1: 启用，2: 不启用      | `2`        | 否       |
+| `SUN_PANEL`          | 启用 Sun Panel：1: 启用，2: 不启用        | `2`        | 否       |
+| `WEB_SSH`            | 启用 Web SSH：1: 启用，2: 不启用          | `2`        | 否       |
+| `ALIST`              | 启用 Alist：1: 启用，2: 不启用            | `2`        | 否       |
+| `SINGBOX`            | 启用 Singbox：1: 启用，2: 不启用          | `1`        | 否       |
+
+
+### 说明：
+- **`SERVERS`**：多个服务器的信息，格式为 `user:pass:host`，多个服务器用逗号分隔。该项为必填。
+- **`BOT_TOKEN` 和 `CHAT_ID`**：用于 Telegram 通知的配置，启用 Telegram 通知时需要提供 Bot Token 和 Chat ID。
+- **`WXPUSHER_TOKEN` 和 `WXPUSHER_USER_ID`**：用于 WxPusher 通知的配置，启用 WxPusher 通知时需要提供 Token 和 User ID。
+- **`PUSHPLUS_TOKEN`**：用于 PushPlus 通知的配置，启用 PushPlus 时需要提供 Token。
+- **`NOTIFY_SERVICE`**：控制启用的通知服务。0 表示不启用通知，1 表示启用 Telegram，2 表示启用 WxPusher，3 表示启用 PushPlus，4 表示启用 Telegram 和 WxPusher，5 表示启用 Telegram 和 PushPlus。
+- **服务控制变量**：`NEZHA_DASHBOARD`、`NEZHA_AGENT`、`SUN_PANEL`、`WEB_SSH`、`ALIST` 和 `SINGBOX` 控制各个服务是否启动。1 表示启用，2 表示禁用。
 
 
 推荐8小时运行一次
