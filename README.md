@@ -56,7 +56,7 @@ ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻
 `task serv00-ql.sh`
 青龙面板示例：
 ![动态通知.png](https://jpg.zjccc.us.kg/file/1734961881867_动态通知.png)
-![更新青龙面板12-23.png](https://jpg.zjccc.us.kg/file/1734961882749_更新青龙面板12-23.png)
+![青龙面板12-23.png](https://jpg.zjccc.us.kg/file/1734962008390_青龙面板12-23.png)
 
 # vps教程
 **1开 2关**
