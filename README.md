@@ -45,6 +45,10 @@
 - **`NOTIFY_SERVICE`**：控制启用的通知服务。0 表示不启用通知，1 表示启用 Telegram，2 表示启用 WxPusher，3 表示启用 PushPlus，4 表示启用 Telegram 和 WxPusher，5 表示启用 Telegram 和 PushPlus。
 - **服务控制变量**：`NEZHA_DASHBOARD`、`NEZHA_AGENT`、`SUN_PANEL`、`WEB_SSH`、`ALIST` 和 `SINGBOX` 控制各个服务是否启动。1 表示启用，2 表示禁用。
 - #### **不想一个个服务项填**，直接填 `ENABLE_ALL_SERVICES` `true`
+- #### 如果 ENABLE_ALL_SERVICES=false 且 SINGBOX=1，那么脚本仍然会执行 Singbox 服务。原因如下：
+
+ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻止单独的服务（如 Singbox）的启动。
+如果 SINGBOX=1，说明 Singbox 服务已经被单独启用，即使 ENABLE_ALL_SERVICES=false，该服务仍会按照单独的配置执行。
 
 推荐8小时运行一次
 `0 */8 * * *`
