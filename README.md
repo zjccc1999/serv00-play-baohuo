@@ -72,14 +72,54 @@ ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻
 {
   "NOTIFICATION": 1,
   "TELEGRAM_CONFIG": {
-    "BOT_TOKEN": "your_bot_token",
-    "CHAT_ID": "your_chat_id"
+    "BOT_TOKEN": "7632093319:AAFtgOWj6YenazWR5NqmmaHfU1RIJo0uhD0",
+    "CHAT_ID": "5230469074"
   },
   "SERVERS": [
     {
-      "HOST": "192.168.1.1",
-      "SSH_USER": "user",
-      "SSH_PASS": "password"
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "SSH_USER_1",
+      "SSH_PASS": "SSH_PASS_1"
+    },
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "SSH_USER_2",
+      "SSH_PASS": "SSH_PASS_2"
+    },
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "SSH_USER_3",
+      "SSH_PASS": "SSH_PASS_3"
+    },
+    {
+      "HOST": "s14.serv00.com",
+      "SSH_USER": "SSH_USER_4",
+      "SSH_PASS": "SSH_PASS_4"
+    },
+    {
+      "HOST": "s9.serv00.com",
+      "SSH_USER": "SSH_USER_5",
+      "SSH_PASS": "SSH_PASS_5"
+    },
+    {
+      "HOST": "s15.serv00.com",
+      "SSH_USER": "SSH_USER_6",
+      "SSH_PASS": "SSH_PASS_6"
+    },
+    {
+      "HOST": "cache10.serv00.com",
+      "SSH_USER": "SSH_USER_7",
+      "SSH_PASS": "SSH_PASS_7"
+    },
+    {
+      "HOST": "cache12.serv00.com",
+      "SSH_USER": "SSH_USER_8",
+      "SSH_PASS": "SSH_PASS_8"
+    },
+    {
+      "HOST": "s5.serv00.com",
+      "SSH_USER": "SSH_USER_9",
+      "SSH_PASS": "SSH_PASS_9"
     }
   ],
   "FEATURES": {
@@ -87,9 +127,10 @@ ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻
     "NEZHA_DASHBOARD": 2,
     "NEZHA_AGENT": 1,
     "SUN_PANEL": 2,
-    "WEB_SSH": 1,
+    "WEB_SSH": 2,
     "ALIST": 2
-  }
+  },
+  "ENABLE_ALL_SERVICES": true
 }
 
 ```
