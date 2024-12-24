@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # 无颜色
 
 # 远程文件 URL
-ACCOUNTS_URL="https://api.zjcc.cloudns.be/CSV/main/accounts.json"
+ACCOUNTS_URL="https://xxxxxxxxxxx/accounts.json"
 
 # 使用 curl 从远程服务器获取 accounts.json
 ACCOUNTS_JSON=$(curl -s "$ACCOUNTS_URL")
