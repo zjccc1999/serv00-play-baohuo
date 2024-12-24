@@ -1,171 +1,198 @@
 #!/bin/bash
 
-# 定义颜色
+# 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-NC='\033[0m'  # 没有颜色
+YELLOW='\033[1;33m'
+NC='\033[0m' # 无颜色
 
-# 自动获取脚本的路径
-SCRIPT_PATH=$(realpath "$0")
+# 远程文件 URL
+ACCOUNTS_URL="https://api.zjcc.cloudns.be/CSV/main/accounts.json"
 
-# 设置每隔 8 小时执行一次
-CRON_JOB="0 */8 * * * $SCRIPT_PATH"  # 使用自动获取的脚本路径
+# 使用 curl 从远程服务器获取 accounts.json
+ACCOUNTS_JSON=$(curl -s "$ACCOUNTS_URL")
 
-# 检查是否已存在该 cron 任务
-if crontab -l | grep -F "$CRON_JOB" > /dev/null; then
-    echo -e "${GREEN}定时任务已存在，跳过添加${NC}"
-else
-    (crontab -l; echo "$CRON_JOB") | crontab -
-    echo -e "${YELLOW}已添加定时任务，每8小时执行一次${NC}"
+# 如果 curl 获取失败，则退出
+if [[ $? -ne 0 || -z "$ACCOUNTS_JSON" ]]; then
+  echo -e "${RED}无法从远程获取 accounts.json 文件，请检查 URL 或网络连接${NC}"
+  exit 1
 fi
 
-# 显示当前的 cron 配置，仅显示当前脚本的定时任务
-echo -e "${YELLOW}当前的 cron 配置如下：${NC}"
-crontab -l | grep "$SCRIPT_PATH"
+# 从 JSON 中提取环境变量
+WXPUSHER_TOKEN=$(echo "$ACCOUNTS_JSON" | jq -r '.WXPUSHER_CONFIG.TOKEN')
+WXPUSHER_USER_ID=$(echo "$ACCOUNTS_JSON" | jq -r '.WXPUSHER_CONFIG.USER_ID')
+PUSHPLUS_TOKEN=$(echo "$ACCOUNTS_JSON" | jq -r '.PUSHPLUS_CONFIG.TOKEN')
+TG_BOT_TOKEN=$(echo "$ACCOUNTS_JSON" | jq -r '.TELEGRAM_CONFIG.BOT_TOKEN')
+TG_CHAT_ID=$(echo "$ACCOUNTS_JSON" | jq -r '.TELEGRAM_CONFIG.CHAT_ID')
 
-# 安装依赖包
-install_packages() {
-    if [ -f /etc/debian_version ]; then
-        package_manager="apt-get install -y"
-        packages="sshpass curl netcat-openbsd cron jq"
-    elif [ -f /etc/redhat-release ]; then
-        package_manager="yum install -y"
-        packages="sshpass curl netcat-openbsd cron jq"
-    elif [ -f /etc/fedora-release ]; then
-        package_manager="dnf install -y"
-        packages="sshpass curl netcat-openbsd cron jq"
-    elif [ -f /etc/alpine-release ]; then
-        package_manager="apk add --no-cache"
-        packages="openssh-client curl netcat-openbsd cronie jq"
-    elif [ -f /usr/local/etc/rc.d/cron ]; then
-        package_manager="pkg install -y"
-        packages="sshpass curl netcat jq cron"
-    else
-        echo -e "${RED}不支持的系统架构！${NC}"
-        exit 1
-    fi
-    $package_manager $packages > /dev/null
+# WXPUSHER、PUSHPLUS 和 TELEGRAM 的 URL
+WXPUSHER_URL="https://wxpusher.zjiecode.com/api/send/message"
+PUSHPLUS_URL="http://www.pushplus.plus/send"
+TELEGRAM_URL="https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage"
+
+# 显示启用的通知方式
+echo -e "${YELLOW}当前启用的通知方式:${NC}"
+if [[ -n "$TG_BOT_TOKEN" && -n "$TG_CHAT_ID" ]]; then
+  echo -e "✅ Telegram"
+fi
+if [[ -n "$WXPUSHER_TOKEN" && -n "$WXPUSHER_USER_ID" ]]; then
+  echo -e "✅ WxPusher"
+fi
+if [[ -n "$PUSHPLUS_TOKEN" ]]; then
+  echo -e "✅ PushPlus"
+fi
+echo "———————————————————————"
+
+# 结果摘要标题
+RESULT_SUMMARY="青龙自动进程内容：\n———————————————————————\n 哪吒V1面板 ‖ 探针 ‖ singbox ‖ sun-panel ‖ webssh ‖ alist \n———————————————————————\n"
+
+# 发送 WXPUSHER 消息
+send_wxpusher_message() {
+  local title="$1"
+  local content="$2"
+  if [[ -z "$WXPUSHER_TOKEN" || -z "$WXPUSHER_USER_ID" ]]; then
+    return
+  fi
+  curl -s -X POST "$WXPUSHER_URL" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"appToken\": \"$WXPUSHER_TOKEN\",
+      \"content\": \"$content\",
+      \"title\": \"$title\",
+      \"uids\": [\"$WXPUSHER_USER_ID\"]
+    }"
 }
 
-install_packages
-
-# 下载配置文件
-download_json() {
-    VPS_JSON_URL="https://api.zjcc.cloudns.be/CSV/main/serv00.json"  # 配置文件 URL
-    if ! curl -s "$VPS_JSON_URL" -o serv00.json; then
-        echo -e "${RED}配置文件下载失败，尝试使用 wget 下载！${NC}"
-        if ! wget -q "$VPS_JSON_URL" -O serv00.json; then
-            echo -e "${RED}配置文件下载失败，请检查下载地址是否正确！${NC}"
-            exit 1
-        else
-            echo -e "${GREEN}配置文件通过 wget 下载成功！${NC}"
-        fi
-    else
-        echo -e "${GREEN}配置文件通过 curl 下载成功！${NC}"
-    fi
-
-    if [[ ! -s "serv00.json" ]]; then
-        echo -e "${RED}配置文件 serv00.json 不存在或为空${NC}"
-        exit 1
-    fi
+# 发送 PUSHPLUS 消息
+send_pushplus_message() {
+  local title="$1"
+  local content="$2"
+  if [[ -z "$PUSHPLUS_TOKEN" ]]; then
+    return
+  fi
+  curl -s -X POST "$PUSHPLUS_URL" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"token\": \"$PUSHPLUS_TOKEN\",
+      \"title\": \"$title\",
+      \"content\": \"<pre>$content</pre>\"
+    }"
 }
 
-download_json
-
-# 解析 Telegram 配置
-BOT_TOKEN=$(grep -o '"BOT_TOKEN": "[^"]*"' serv00.json | sed 's/"BOT_TOKEN": "//' | sed 's/"//')
-CHAT_ID=$(grep -o '"CHAT_ID": "[^"]*"' serv00.json | sed 's/"CHAT_ID": "//' | sed 's/"//')
-
-# 解析通知方式
-NOTIFICATION=$(grep -o '"NOTIFICATION": [^,]*' serv00.json | sed 's/"NOTIFICATION": //')
-
-# 获取功能开关
-SINGBOX=$(grep -o '"SINGBOX": [^,]*' serv00.json | sed 's/"SINGBOX": //')
-NEZHA_AGENT=$(grep -o '"NEZHA_AGENT": [^,]*' serv00.json | sed 's/"NEZHA_AGENT": //')
-SUN_PANEL=$(grep -o '"SUN_PANEL": [^,]*' serv00.json | sed 's/"SUN_PANEL": //')
-WEB_SSH=$(grep -o '"WEB_SSH": [^,]*' serv00.json | sed 's/"WEB_SSH": //')
-
-ENABLED_SERVICES=""
-
-# 判断启用的服务
-if [ "$SINGBOX" -eq 1 ]; then
-    ENABLED_SERVICES+="SINGBOX "
-fi
-if [ "$NEZHA_AGENT" -eq 1 ]; then
-    ENABLED_SERVICES+="NEZHA_AGENT "
-fi
-if [ "$SUN_PANEL" -eq 1 ]; then
-    ENABLED_SERVICES+="SUN_PANEL "
-fi
-if [ "$WEB_SSH" -eq 1 ]; then
-    ENABLED_SERVICES+="WEB_SSH "
-fi
-
-# 输出启用的服务
-if [ -n "$ENABLED_SERVICES" ]; then
-    echo -e "${YELLOW}当前启用的服务：${NC} $ENABLED_SERVICES"
-else
-    echo -e "${YELLOW}没有启用任何服务。${NC}"
-fi
-
-# 发送 Telegram 通知的函数
-send_tg_notification() {
-    local message=$1
-    response=$(curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
-        -d "chat_id=$CHAT_ID" \
-        -d "text=$message")
-    
-    # 检查发送是否成功
-    if [[ "$response" == *"ok"* ]]; then
-        echo -e "${GREEN}通知发送成功！${NC}"
-    else
-        echo -e "${RED}通知发送失败！${NC}"
-    fi
+# 发送 TELEGRAM 消息
+send_telegram_message() {
+  local title="$1"
+  local content="$2"
+  if [[ -z "$TG_BOT_TOKEN" || -z "$TG_CHAT_ID" ]]; then
+    return
+  fi
+  curl -s -X POST "$TELEGRAM_URL" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"chat_id\": \"$TG_CHAT_ID\",
+      \"text\": \"$title $content\"
+    }"
 }
 
-# 执行 SSH 操作
-for SERVER in $(grep -o '"SERVERS": \[.*\]' serv00.json | sed 's/"SERVERS": \[\(.*\)\]/\1/'); do
-    SSH_USER=$(echo "$SERVER" | sed 's/"SSH_USER": "\([^"]*\)"/\1/')
-    SSH_PASS=$(echo "$SERVER" | sed 's/"SSH_PASS": "\([^"]*\)"/\1/')
-    SSH_HOST=$(echo "$SERVER" | sed 's/"HOST": "\([^"]*\)"/\1/')
+# 显示当前启用的用户
+echo -e "${YELLOW}当前启用的用户:${NC}"
+for account in $(echo "$ACCOUNTS_JSON" | jq -r '.info[] | @base64'); do
+  _jq() {
+    echo ${account} | base64 --decode | jq -r ${1}
+  }
+  USERNAME=$(_jq '.username')
+  echo -e "✅ $USERNAME"
+done
 
-    SERVER_ID="${SSH_USER}-${SSH_HOST}"
+LOGIN_TIMEOUT=20    # 登录等待时间20秒
+index=1            # 初始化 index
 
-    # 输出开始执行的消息
-    echo -e "${YELLOW}开始执行 $SERVER_ID${NC}"
+# 解析账户信息并遍历每个账户
+for account in $(echo "$ACCOUNTS_JSON" | jq -r '.info[] | @base64'); do
+  _jq() {
+    echo ${account} | base64 --decode | jq -r ${1}
+  }
 
-    # 执行 SSH 操作
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SSH_HOST" <<EOF > /dev/null 2>&1
-    # 根据功能开关判断是否需要重启服务
-    if [ "$SINGBOX" -eq 1 ]; then
-        pkill -f "singbox" || true
-        cd /home/$SSH_USER/serv00-play/singbox || true
-        nohup ./start.sh > serv00-play.log 2>&1 &
-    fi
+  USERNAME=$(_jq '.username')
+  PASSWORD=$(_jq '.password')
+  SERVER=$(_jq '.host')
 
-    if [ "$NEZHA_AGENT" -eq 1 ]; then
-        pkill -f "nezha-agent" || true
-        cd /home/$SSH_USER/nezha_app/agent || true
-        nohup sh nezha-agent.sh > nezha-agent.log 2>&1 &
-    fi
+  # 尝试SSH登录
+  sshpass -p "$PASSWORD" timeout $LOGIN_TIMEOUT ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q "$USERNAME@$SERVER" exit
+  if [[ $? -ne 0 ]]; then  # 如果SSH登录失败
+    RESULT_SUMMARY+="❌      $index. $USERNAME       【 $SERVER 】 - 登录失败\n"  # 更新结果摘要
+    ((index++))
+    continue  # 跳过当前账户，处理下一个
+  fi
+  # SSH登录成功后，执行进程操作
+  sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -tt "$USERNAME@$SERVER" <<EOF
+  # 杀掉并重启 哪吒v1面板 进程
+  pkill -f "nezha-dashboard" || true
+  cd /home/$USERNAME/nezha_app/dashboard || true
+  nohup ./nezha-dashboard &
 
-    ps -A
-    exit
+  # 杀掉并重启 哪吒v1探针 进程
+  pkill -f "nezha-agent" || true
+  cd /home/$USERNAME/nezha_app/agent || true
+  nohup sh nezha-agent.sh &
+
+  # 重启 singbox 进程
+  cd /home/$USERNAME/serv00-play/singbox || true
+  nohup ./start.sh &
+
+  # 杀掉并重启 sun-panel 进程
+  pkill -f "sun-panel" || true
+  cd /home/$USERNAME/serv00-play/sunpanel || true
+  nohup ./sun-panel &
+
+  # 重启 webssh 进程
+  cd /home/$USERNAME/serv00-play/webssh || true
+  nohup ./wssh &
+
+  # 重启 alist 进程
+  cd /home/$USERNAME/serv00-play/alist || true
+  nohup ./alist &
+
+  ps -A  # 查看当前运行的进程
+  exit
 EOF
 
-    # 检查 SSH 执行状态
-    if [ $? -eq 0 ]; then
-        # 成功通知
-        if [ "$NOTIFICATION" -eq 1 ]; then
-            send_tg_notification "✅ [$SERVER_ID] 脚本执行完成：服务已启动。启用的服务: $ENABLED_SERVICES"
-        fi
-        echo -e "${GREEN}$SERVER_ID 执行成功，启用的服务: $ENABLED_SERVICES${NC}"
-    else
-        # 失败通知
-        if [ "$NOTIFICATION" -eq 1 ]; then
-            send_tg_notification "❌ [$SERVER_ID] 脚本执行失败：请检查远程服务器。"
-        fi
-        echo -e "${RED}$SERVER_ID 执行失败${NC}"
+  # 定义进程名称和对应的中文描述
+  declare -A processes=( 
+    ["nezha-dashboard"]="哪吒面板" 
+    ["nezha-agent"]="探针" 
+    ["serv00sb"]="singbox" 
+    ["sun-panel"]="sun-panel" 
+    ["wssh"]="webssh" 
+    ["alist"]="alist"
+  )
+
+  # 获取当前服务器上运行的进程列表
+  process_list=$(sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME@$SERVER" "ps -A")
+  PROCESS_DETAILS=""  # 初始化进程详情
+  # 检查进程是否在运行
+  for process in "${!processes[@]}"; do
+    if echo "$process_list" | grep -q "$process"; then
+      PROCESS_DETAILS+="    ${processes[$process]} |"  # 如果进程在运行，则添加到详情中
     fi
+  done
+
+  # 如果没有进程运行，标记操作结果为失败
+  if [[ -z "$PROCESS_DETAILS" ]]; then
+    PROCESS_DETAILS="无进程启动"
+  fi
+
+  RESULT_SUMMARY+="✅      $index. $USERNAME 【 $SERVER 】登录成功\n$PROCESS_DETAILS\n"  # 更新结果摘要
+  ((index++))  # 更新索引
 done
+
+# 发送通知
+if [[ -n "$WXPUSHER_TOKEN" && -n "$WXPUSHER_USER_ID" ]]; then
+  send_wxpusher_message "青龙进程自动重启结果" "$RESULT_SUMMARY"
+fi
+if [[ -n "$PUSHPLUS_TOKEN" ]]; then
+  send_pushplus_message "青龙进程自动重启结果" "$RESULT_SUMMARY"
+fi
+if [[ -n "$TG_BOT_TOKEN" && -n "$TG_CHAT_ID" ]]; then
+  send_telegram_message "青龙进程自动重启结果" "$RESULT_SUMMARY"
+fi
