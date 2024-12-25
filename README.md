@@ -8,7 +8,7 @@
 
 # 青龙面板教程
 - **serv00ql 是青龙面板保活脚本**
-安装依赖:
+# 安装Linux依赖: 	jq  curl  sshpass
 
 ![依赖.png](https://jpg.zjccc.us.kg/file/1734808200086_依赖.png)
 
@@ -16,39 +16,8 @@
 **1开 2关**
 
 **1开 2关**
-
-使用变量名存储服务器信息，每个服务器用一个变量，例如：
-# 环境变量配置
-| 变量名            | 描述                           | 默认值   | 必填/选填 |
-|-------------------|--------------------------------|----------|----------|
-| `ENABLE_ALL_SERVICES` | 启用所有服务的标志，`true` 表示启用所有服务，`false` 表示不启用 | `false`  | 选填     |
-| `SINGBOX`           | 启用 Singbox 服务，`1` 表示启用，`0` 表示禁用 | `1`      | 选填     |
-| `NEZHA_DASHBOARD`   | 启用 Nezha Dashboard 服务，`1` 表示启用，`0` 表示禁用 | `2`      | 选填     |
-| `NEZHA_AGENT`       | 启用 Nezha Agent 服务，`1` 表示启用，`0` 表示禁用 | `2`      | 选填     |
-| `SUN_PANEL`         | 启用 Sun Panel 服务，`1` 表示启用，`0` 表示禁用 | `2`      | 选填     |
-| `WEB_SSH`           | 启用 Web SSH 服务，`1` 表示启用，`0` 表示禁用 | `2`      | 选填     |
-| `ALIST`             | 启用 Alist 服务，`1` 表示启用，`0` 表示禁用 | `2`      | 选填     |
-| `NOTIFY_SERVICE`    | 启用通知的服务类型：`0` 不启用，`1` Telegram，`2` WxPusher，`3` PushPlus，`4` Telegram 和 WxPusher，`5` Telegram 和 PushPlus | `0`      | 选填     |
-| `BOT_TOKEN`         | Telegram Bot 的 Token               | 未设置   | 选填     |
-| `CHAT_ID`           | Telegram Chat 的 ID                | 未设置   | 选填     |
-| `WXPUSHER_TOKEN`    | WxPusher 的 Token                  | 未设置   | 选填     |
-| `PUSHPLUS_TOKEN`    | PushPlus 的 Token                  | 未设置   | 选填     |
-| `WXPUSHER_USER_ID`  | WxPusher 的 User ID                | 未设置   | 选填     |
-| `SERVERS`           | 服务器列表，格式为 `user:pass:host`，多个服务器用逗号分隔 | 未设置   | 必填     |
-
-
-### 说明：
-- **`SERVERS`**：多个服务器的信息，格式为 `user:pass:host`，多个服务器用逗号分隔。该项为必填。
-- **`BOT_TOKEN` 和 `CHAT_ID`**：用于 Telegram 通知的配置，启用 Telegram 通知时需要提供 Bot Token 和 Chat ID。
-- **`WXPUSHER_TOKEN` 和 `WXPUSHER_USER_ID`**：用于 WxPusher 通知的配置，启用 WxPusher 通知时需要提供 Token 和 User ID。
-- **`PUSHPLUS_TOKEN`**：用于 PushPlus 通知的配置，启用 PushPlus 时需要提供 Token。
-- **`NOTIFY_SERVICE`**：控制启用的通知服务。0 表示不启用通知，1 表示启用 Telegram，2 表示启用 WxPusher，3 表示启用 PushPlus，4 表示启用 Telegram 和 WxPusher，5 表示启用 Telegram 和 PushPlus。
-- **服务控制变量**：`NEZHA_DASHBOARD`、`NEZHA_AGENT`、`SUN_PANEL`、`WEB_SSH`、`ALIST` 和 `SINGBOX` 控制各个服务是否启动。1 表示启用，2 表示禁用。
-- #### **不想一个个服务项填**，直接填 `ENABLE_ALL_SERVICES` `true`
-- #### 如果 ENABLE_ALL_SERVICES=false 且 SINGBOX=1，那么脚本仍然会执行 Singbox 服务。原因如下：
-
-ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻止单独的服务（如 Singbox）的启动。
-如果 SINGBOX=1，说明 Singbox 服务已经被单独启用，即使 ENABLE_ALL_SERVICES=false，该服务仍会按照单独的配置执行。
+## 放弃本地环境变量 同步serv00-vps.sh 采用远程变量 `serv00.json`
+## 具体看VPS那里的解释
 
 推荐8小时运行一次
 `0 */8 * * *`
@@ -72,8 +41,8 @@ ENABLE_ALL_SERVICES=false 表示并不会启用所有服务，但是它并不阻
 {
   "NOTIFICATION": 1,
   "TELEGRAM_CONFIG": {
-    "BOT_TOKEN": "7632093319:AAFtgOWj6YenazWR5NqmmaHfU1RIJo0uhD0",
-    "CHAT_ID": "5230469074"
+    "BOT_TOKEN": "xxxxx",
+    "CHAT_ID": "xxxxx"
   },
   "SERVERS": [
     {
