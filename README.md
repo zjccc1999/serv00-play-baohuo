@@ -79,7 +79,7 @@
 ```
 | 配置项                 | 值                                                                 | 说明                                      |
 |------------------------|--------------------------------------------------------------------|-------------------------------------------|
-| `NOTIFICATION`          | 3                                                                  | 设置通知方式，值为 `3` 表示启用 **PushPlus** 和 **WxPusher** 通当 NOTIFICATION = 1 时，意味着只启用 Telegram 作为通知服务。若 NOTIFICATION = 2，则表示仅启用 WxPusher 通知服务。对于 NOTIFICATION = 3 的情况， PushPlus 作为通知服务当 NOTIFICATION = 4，它代表同时启用 Telegram 和 WxPusher 两种通知服务。 |
+| `NOTIFICATION`          | 3                                                                  | 通当 NOTIFICATION = 1 时，意味着只启用 Telegram 作为通知服务。若 NOTIFICATION = 2，则表示仅启用 WxPusher 通知服务。对于 NOTIFICATION = 3 的情况， PushPlus 作为通知服务当 NOTIFICATION = 4，它代表同时启用 Telegram 和 WxPusher 两种通知服务。 |
 | `BOT_TOKEN`             | `1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi`                  | Telegram 机器人的 Bot Token，用于发送通知。 |
 | `CHAT_ID`               | `123456789`                                                       | Telegram 聊天室或频道的 ID，用于指定通知发送的目标。 |
 | `WXPUSHER_TOKEN`        | `wxpusher_token_value_here`                                        | WxPusher 的 Token，用于认证和授权通知发送。 |
