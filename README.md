@@ -2,6 +2,7 @@
 
 ## 2024/12/23/00:45 更新serv00-ql  增加了多个通知方式 
 ## 2024/12/23/21:48 更新serv00-ql和serv00-vps  修复了webssh的bug,增加了alist 增加了服务项总开关`ENABLE_ALL_SERVICES` 修改了通知逻辑，动态通知。
+## 2024/12/23/21:48 更新serv00-ql和serv00-vps  放弃本地环境变量 同步 `serv00-vps.sh` 采用远程变量 `serv00.json`  。
 感谢[饭奇骏大佬的serv00-play项目](https://github.com/frankiejun).  [serv00-play项目地址](https://github.com/frankiejun/serv00-play).
 
 感谢[vfhky大佬的nz项目](https://github.com/vfhky).    [serv00_ct8_nezha项目地址](https://github.com/vfhky/serv00_ct8_nezha).
